@@ -64,6 +64,10 @@ public:
    */
   void UpdateEKF(const Eigen::VectorXd &z);
 
+  /// \ brief Common calculation between EKF and KF updates
+  /// \ param VectorXd
+  void KFHelper(const Eigen::VectorXd &y);
+  
 };
 
 #endif /* KALMAN_FILTER_H_ */

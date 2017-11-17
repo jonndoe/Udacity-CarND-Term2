@@ -1,7 +1,10 @@
+#include <math.h>
 #include "kalman_filter.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+
+const float PI2 = 2 * M_PI;
 
 // Please note that the Eigen library does not initialize
 // VectorXd or MatrixXd objects with zeros upon creation.
@@ -48,6 +51,33 @@ void KalmanFilter::Update(const VectorXd &z) {
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
   P_ = (I - K * H_) * P_;
+}
+
+VectorXd RadarCartesianToPolar(const VectorXd &x_state){
+  /*
+   * convert radar measurements from cartesian coordinates (x, y, vx, vy) to
+   * polar (rho, phi, rho_dot) coordinates
+  */
+  float px, py, vx, vy;
+  px = x_state[0];
+  py = x_state[1];
+  vx = x_state[2];
+  vy = x_state[3];
+
+  float rho, phi, rho_dot;
+  rho = sqrt(px*px + py*py);
+  phi = atan2(py, px);  // returns values between -pi and pi
+
+  // avoid division by 0 in computing rho_dot
+  if(rho < 0.000001)
+    rho = 0.000001;
+
+  rho_dot = (px * vx + py * vy) / rho;
+
+  VectorXd z_pred = VectorXd(3);
+  z_pred << rho, phi, rho_dot;
+
+  return z_pred;
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
