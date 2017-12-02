@@ -22,6 +22,7 @@
 **/photos
 **/**photos
 **/videos
+**/video
 
 **/mac_sim.app
 !**/models/gold
