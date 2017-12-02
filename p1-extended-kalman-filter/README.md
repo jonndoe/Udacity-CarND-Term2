@@ -1,7 +1,94 @@
-# Extended Kalman Filter Project Starter Code
-Self-Driving Car Engineer Nanodegree Program
+#### Udacity Self-Driving Car Engineer Nanodegree</b>
+**Term 2, Project 1**
+# Extended Kalman Filter
 
-In this project you will utilize a kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric. 
+##### &nbsp;
+
+## Summary
+
+##### &nbsp;
+
+### Goals
+What problem are we solving?
+
+##### &nbsp;
+
+### Approach
+Why are we using Kalman Filters? How do they work (at a high-level)?
+
+##### &nbsp;
+
+##### Initialize, Predict, Update
+There are three main steps for programming a Kalman filter:
+
+1. **Initialize** the Kalman filter variables.
+1. **Predict** where our object is going to be after a time step Δt
+1. **Update** where our object is based on sensor measurements
+Then the prediction and update steps repeat themselves in a loop.
+
+To measure how well our Kalman filter performs, we will then calculate root mean squared error comparing the Kalman filter results with the provided ground truth.
+
+These three steps (initialize, predict, update) plus calculating RMSE encapsulate the entire extended Kalman filter project.
+
+##### &nbsp;
+
+### Results
+<a href="https://youtu.be/EJ-2sBC8pq0"><img src="output/video-thumbnail-v2.png" width="60%" /></a>
+
+<img src="output/rmse.png" width="13%" /></a>
+
+##### &nbsp;
+
+## Implementation
+
+#### Files in the Github src Folder
+The files we worked with are in the /src folder of the github repository.
+
+- **main.cpp** &mdash; communicates with the Term 2 Simulator receiving data measurements, calls a function to run the Kalman filter, calls a function to calculate RMSE
+
+- **FusionEKF.cpp** &mdash; initializes the filter, calls the predict function, calls the update function
+
+- **kalman_filter.cpp** &mdash; defines the predict function, the update function for lidar, and the update function for radar
+
+- **tools.cpp** &mdash; function to calculate RMSE and the Jacobian matrix
+
+##### &nbsp;
+
+#### How the Files Relate to Each Other
+Here is a brief overview of what happens when you run the code files:
+
+- `Main.cpp` reads in the data and sends a sensor measurement to `FusionEKF.cpp`
+- `FusionEKF.cpp` takes the sensor data and initializes variables and updates variables. The Kalman filter equations are not in this file. `FusionEKF.cpp` has a variable called `ekf_`, which is an instance of a KalmanFilter class. The `ekf_` will hold the matrix and vector values. You will also use the `ekf_` instance to call the predict and update equations.
+- The KalmanFilter class is defined in `kalman_filter.cpp` and `kalman_filter.h`
+
+##### &nbsp;
+
+#### Scope & Steps
+1. In `tools.cpp`, fill in the functions that calculate root mean squared error (RMSE) and the Jacobian matrix.
+2. Fill in the code in `FusionEKF.cpp`. You'll need to initialize the Kalman Filter, prepare the Q and F matrices for the prediction step, and call the radar and lidar update functions.
+3. In `kalman_filter.cpp`, fill out the `Predict()`, `Update()`, and `UpdateEKF()` functions.
+5. Initialize the State Vector
+ - You'll need to initialize the state vector  with the first sensor measurement.
+ - Although radar gives velocity data in the form of the range rate
+​`ρ˙`, a radar measurement does not contain enough information to determine the state variable velocities `vx` and `vy`. You can, however, use the radar measurements `ρ` and `ϕ` to initialize the state variable locations `p​x` and `py`.
+6. Calculate `y = z - H * x'`
+ - For lidar measurements, the error equation is `y = z - H * x'`. For radar measurements, the functions that map the x vector `[px, py, vx, vy]` to polar coordinates are non-linear. Instead of using H to calculate `y = z - H * x'`, for radar measurements you'll have to use the equations that map from cartesian to polar coordinates: `y = z - h(x')`.
+7. Normalize Angles
+ - In C++, `atan2()` returns values between -pi and pi. When calculating phi in `y = z - h(x)` for radar measurements, the resulting angle phi in the y vector should be adjusted so that it is between -pi and pi. The Kalman filter is expecting small angle values between the range -pi and pi. When working in radians, we need to add 2π or subtract 2π until the angle is within the desired range.
+8. Avoid Divide by Zero throughout the Implementation
+ - Before and while calculating the Jacobian matrix `Hj`, make sure your code avoids dividing by zero. For example, both the `x` and `y` values might be zero or `px*px + py*py` might be close to zero. What should be done in those cases?
+4. No Need to Tune Parameters.
+  - The R matrix values and Q noise values are provided for you. There is no need to tune these parameters for this project. In the unscented Kalman Filter lectures, we'll discuss how to determine these parameters.
+9. Test Your Implementation
+ - Test! We're giving you the ability to analyze your output data and calculate RMSE. As you make changes, keep testing your algorithm! If you are getting stuck, add print statements to pinpoint any issues. But please remove extra print statements before turning in the code.
+
+ ##### &nbsp;
+
+---
+
+# Project Starter Code
+
+In this project you will utilize a kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric.
 
 This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
 
@@ -57,7 +144,7 @@ OUTPUT: values provided by the c++ program to the simulator
 
 1. Clone this repo.
 2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make` 
+3. Compile: `cmake .. && make`
    * On windows, you may need to run: `cmake .. -G "Unix Makefiles" && make`
 4. Run it: `./ExtendedKF `
 
@@ -90,40 +177,3 @@ cmake and make!
 More information is only accessible by people who are already enrolled in Term 2
 of CarND. If you are enrolled, see [the project resources page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/382ebfd6-1d55-4487-84a5-b6a5a4ba1e47)
 for instructions and the project rubric.
-
-## Hints and Tips!
-
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
-* Students have reported rapid expansion of log files when using the term 2 simulator.  This appears to be associated with not being connected to uWebSockets.  If this does occur,  please make sure you are conneted to uWebSockets. The following workaround may also be effective at preventing large log files.
-
-    + create an empty log file
-    + remove write permissions so that the simulator can't write to log
- * Please note that the ```Eigen``` library does not initialize ```VectorXd``` or ```MatrixXd``` objects with zeros upon creation.
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
-
-However! We'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Regardless of the IDE used, every submitted project must
-still be compilable with cmake and make.
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
