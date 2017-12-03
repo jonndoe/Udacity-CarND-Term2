@@ -4,13 +4,8 @@
 
 ##### &nbsp;
 
-## Goals
-What problem are we solving?
-
-##### &nbsp;
-
-## Approach
-Why are we using Kalman Filters? How do they work (at a high-level)?
+## Goal
+The goal of this project is to build a tool that can accurately predict the location of a vehicle based on its lidar and radar sensor measurements. Given that different sensors will return different measurements, and that neither of these measurements may accurately reflect the true position of the car, we need to reconcile or "fuse" the various sensor inputs into one accurate prediction. To do this, we will build an Extended Kalman Filter.
 
 ##### &nbsp;
 
@@ -19,8 +14,7 @@ There are three main steps for programming a Kalman filter:
 
 1. **Initialize** the Kalman filter variables.
 1. **Predict** where our object is going to be after a time step Δt
-1. **Update** where our object is based on sensor measurements
-Then the prediction and update steps repeat themselves in a loop.
+1. **Update** where our object is based on sensor measurements. The 'predict' and 'update' steps then repeat themselves in a loop.
 
 To measure how well our Kalman filter performs, we will then calculate the root mean squared error (RSME) comparing the Kalman filter results with the provided ground truth.
 
