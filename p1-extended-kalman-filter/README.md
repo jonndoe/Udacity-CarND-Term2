@@ -1,24 +1,20 @@
-#### Udacity Self-Driving Car Engineer Nanodegree</b>
-**Term 2, Project 1**
-# Extended Kalman Filter
+#### Udacity Self-Driving Car Engineer Nanodegree 
+
+# Term 2 / Project 1: Extended Kalman Filter
 
 ##### &nbsp;
 
-## Summary
-
-##### &nbsp;
-
-### Goals
+## Goals
 What problem are we solving?
 
 ##### &nbsp;
 
-### Approach
+## Approach
 Why are we using Kalman Filters? How do they work (at a high-level)?
 
 ##### &nbsp;
 
-##### Initialize, Predict, Update
+### Initialize, Predict, Update
 There are three main steps for programming a Kalman filter:
 
 1. **Initialize** the Kalman filter variables.
@@ -32,7 +28,7 @@ These three steps (initialize, predict, update) plus calculating the RMSE encaps
 
 ##### &nbsp;
 
-### Results
+## Results
 <a href="https://youtu.be/EJ-2sBC8pq0"><img src="output/video-thumbnail-v2.png" width="60%" /></a>
 
 <img src="output/rmse.png" width="13%" /></a>
@@ -41,7 +37,7 @@ These three steps (initialize, predict, update) plus calculating the RMSE encaps
 
 ## Implementation
 
-#### Files in the Github src Folder
+### Files in the Github src Folder
 The files we worked with are in the /src folder of the github repository.
 
 - **main.cpp** &mdash; communicates with the Term 2 Simulator receiving data measurements, calls a function to run the Kalman filter, calls a function to calculate RMSE
@@ -54,7 +50,7 @@ The files we worked with are in the /src folder of the github repository.
 
 ##### &nbsp;
 
-#### How the Files Relate to Each Other
+### How the Files Relate to Each Other
 Here is a brief overview of what happens when you run the code files:
 
 - `Main.cpp` reads in the data and sends a sensor measurement to `FusionEKF.cpp`
@@ -63,7 +59,7 @@ Here is a brief overview of what happens when you run the code files:
 
 ##### &nbsp;
 
-#### Scope & Steps
+### Scope & Steps
 1. In `tools.cpp`, fill in the functions that calculate root mean squared error (RMSE) and the Jacobian matrix.
 1. Fill in the code in `FusionEKF.cpp`. You'll need to initialize the Kalman Filter, prepare the Q and F matrices for the prediction step, and call the radar and lidar update functions.
 1. In `kalman_filter.cpp`, fill out the `Predict()`, `Update()`, and `UpdateEKF()` functions.
@@ -96,6 +92,7 @@ Here is a brief overview of what happens when you run the code files:
 ##### &nbsp;
 
 ---
+In case you want to run this project yourself, here is the project starter code.
 
 # Project Starter Code
 
