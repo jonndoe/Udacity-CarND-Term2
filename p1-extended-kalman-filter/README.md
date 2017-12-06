@@ -23,9 +23,9 @@ These three steps (initialize, predict, update) plus calculating the RMSE encaps
 ##### &nbsp;
 
 ## Results
-<a href="https://youtu.be/EJ-2sBC8pq0"><img src="output/video-thumbnail-v2.png" width="60%" /></a>
+<a href="https://youtu.be/EJ-2sBC8pq0"><img src="results/video-thumbnail-v2.png" width="60%" /></a>
 
-<img src="output/rmse.png" width="13%" /></a>
+<img src="results/rmse.png" width="13%" /></a>
 
 ##### &nbsp;
 
