@@ -25,11 +25,13 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 30;
+  // ** Needs tuning **
+  std_a_ = 2.;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 30;
-  
+  // ** Needs tuning **
+  std_yawdd_ = 0.6;
+
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
   std_laspx_ = 0.15;
@@ -46,7 +48,7 @@ UKF::UKF() {
   // Radar measurement noise standard deviation radius change in m/s
   std_radrd_ = 0.3;
   //DO NOT MODIFY measurement noise values above these are provided by the sensor manufacturer.
-  
+
   /**
   TODO:
 
@@ -54,6 +56,14 @@ UKF::UKF() {
 
   Hint: one or more values initialized above might be wildly off...
   */
+
+  // initially set to false, set to true in first call of ProcessMeasurement
+  is_initialized_ = false;
+
+  // time when the state is true, in us
+  time_us_ = 0.0;
+  
+
 }
 
 UKF::~UKF() {}
