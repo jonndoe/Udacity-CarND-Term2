@@ -62,16 +62,16 @@ UKF::UKF() {
   time_us_ = 0.0;
 
   // state dimension
-  n_x = 5;
+  n_x_ = 5;
 
   // augmented dimension
-  n_aug = 7;
+  n_aug_ = 7;
 
   // spreading parameter
-  lambda = 3 - n_x_;
+  lambda_ = 3 - n_x_;
 
-  // sigma point matrix
-  MatrixXd Xsig_aug = MatrixXd(n_aug, 2 * n_aug + 1);
+  // predicted sigma points matrix
+  Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
 
   // vector for weights
   weights_ = VectorXd(2 * n_aug_ + 1);
@@ -83,18 +83,18 @@ UKF::UKF() {
   }
 
   // measurement noise matrices
-  R_laser = MatrixXd(2, 2);
-  R_laser << std_laspx_ * std_laspx_, 0,
+  R_laser_ = MatrixXd(2, 2);
+  R_laser_ << std_laspx_ * std_laspx_, 0,
           0, std_laspy_ * std_laspy_;
 
-  R_radar = MatrixXd(3, 3);
-  R_radar << std_radr_ * std_radr_, 0, 0,
+  R_radar_ = MatrixXd(3, 3);
+  R_radar_ << std_radr_ * std_radr_, 0, 0,
           0, std_radphi_ * std_radphi_, 0,
           0, 0, std_radrd_ * std_radrd_;
 
   // process noise covariance matrix
-  Q = MatrixXd(2, 2);
-  Q << std_a_ * std_a_, 0,
+  Q_ = MatrixXd(2, 2);
+  Q_ << std_a_ * std_a_, 0,
           0, std_yawdd_ * std_yawdd_;
 
   // state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
@@ -123,34 +123,35 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   Complete this function! Make sure you switch between lidar and radar
   measurements.
   */
-}
-if (!is_initialized_) {
-    // switch between lidar and radar
-    if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
-        double px = meas_package.raw_measurements_[0];
-        double py = meas_package.raw_measurements_[1];
-        x_ << px, py, 0, 0, 0;
-    } else if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
-        double rho = meas_package.raw_measurements_[0];
-        double phi = meas_package.raw_measurements_[1];
-        double v = meas_package.raw_measurements_[2];
-        double px = rho * cos(phi);
-        double py = rho * sin(phi);
-        double yawd = 0.0;
-        x_ << px, py, v, phi, yawd;
-    }
-    previous_timestamp_ = meas_package.timestamp_;
-    is_initialized_ = true;
-    return;
-}
 
-if ((use_radar_ && meas_package.sensor_type_ == meas_package.RADAR) ||
-    (use_laser_ && meas_package.sensor_type_ == meas_package.LASER)) {
-    double delta_t = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;
-    previous_timestamp_ = meas_package.timestamp_;
+  if (!is_initialized_) {
+      // switch between lidar and radar
+      if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+          double px = meas_package.raw_measurements_[0];
+          double py = meas_package.raw_measurements_[1];
+          x_ << px, py, 0, 0, 0;
+      } else if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+          double rho = meas_package.raw_measurements_[0];
+          double phi = meas_package.raw_measurements_[1];
+          double v = meas_package.raw_measurements_[2];
+          double px = rho * cos(phi);
+          double py = rho * sin(phi);
+          double yawd = 0.0;
+          x_ << px, py, v, phi, yawd;
+      }
+      previous_timestamp_ = meas_package.timestamp_;
+      is_initialized_ = true;
+      return;
+  }
 
-    Prediction(delta_t);
-    MeasurementUpdate(meas_package);
+  if ((use_radar_ && meas_package.sensor_type_ == meas_package.RADAR) ||
+      (use_laser_ && meas_package.sensor_type_ == meas_package.LASER)) {
+      double delta_t = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;
+      previous_timestamp_ = meas_package.timestamp_;
+
+      Prediction(delta_t);
+      MeasurementUpdate(meas_package);
+  }
 }
 
 /**
@@ -341,8 +342,8 @@ void UKF::MeasurementUpdate(MeasurementPackage meas_package) {
   int n_z;
 
   if (meas_package.sensor_type_ == meas_package.LASER) {
-      n_z = 3;
-      R = R_laser;
+      n_z = n_z_lidar_;
+      R = R_laser_;
 
       double px = meas_package.raw_measurements_[0];
       double py = meas_package.raw_measurements_[1];
@@ -359,8 +360,8 @@ void UKF::MeasurementUpdate(MeasurementPackage meas_package) {
           z_sig(1, i) = Xsig_pred_(1, i);
       }
     } else if (meas_package.sensor_type_ == meas_package.RADAR) {
-          n_z = 2;
-          R = R_radar;
+          n_z = n_z_radar_;
+          R = R_radar_;
 
           //read measurements
           double rho = meas_package.raw_measurements_[0];
