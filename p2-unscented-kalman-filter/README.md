@@ -70,6 +70,7 @@ The files we worked with are in the /src folder of the github repository.
    We need to make sure the code avoids dividing by zero. For example, both the `x` and `y` values might be zero or `px*px + py*py` might be close to zero.
 
 1. Tune Parameters and Initialize Variables.
+
     We need to tune the process noise parameters `std_a_` and `std_yawdd_` in order to get your solution working on both datasets. The measurement noise parameters for lidar and radar should be left as given (since these are provided by the device manufacturer).
 
     We also need to initialize your state vector x and state covariance matrix P with appropriate values.
