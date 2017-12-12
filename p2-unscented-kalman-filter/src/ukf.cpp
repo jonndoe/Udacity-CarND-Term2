@@ -82,6 +82,10 @@ UKF::UKF() {
       weights_(i) = weight;
   }
 
+  // measurements
+  n_z_lidar_ = 2;
+  n_z_radar_ = 3;
+
   // measurement noise matrices
   R_laser_ = MatrixXd(2, 2);
   R_laser_ << std_laspx_ * std_laspx_, 0,
@@ -432,13 +436,13 @@ void UKF::MeasurementUpdate(MeasurementPackage meas_package) {
         z_diff(1) = remainder(z_diff(1), 2.0 * M_PI);
     }
 
+    //update state mean and covariance matrix
+    x_ = x_ + K * z_diff;
+    P_ = P_ - K * S * K.transpose();
+
     //calculate NIS
     string sensor_type = meas_package.sensor_type_ == meas_package.RADAR ? "RADAR" : "LASER";
     VectorXd nis = z_diff.transpose() * S.inverse() * z_diff;
     cout << sensor_type << " measurement : " << nis << endl;
-
-    //update state mean and covariance matrix
-    x_ = x_ + K * z_diff;
-    P_ = P_ - K * S * K.transpose();
 
 }

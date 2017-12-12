@@ -75,10 +75,10 @@ public:
   MatrixXd Q_;
 
   ///* Lidar measurements
-  int n_z_lidar_ = 3;
+  int n_z_lidar_;
 
   ///* Radar measurements
-  int n_z_radar_ = 2;
+  int n_z_radar_;
 
   ///* Measurement Noises
   MatrixXd R_laser_;
