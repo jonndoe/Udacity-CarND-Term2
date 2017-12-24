@@ -28,12 +28,12 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	// Add random Gaussian noise to each particle.
 	// NOTE: Consult particle_filter.h for more information about this method (and others in this file).
 
-	num_particles = 101;
+	num_particles = 110;
 
-  // define normal distributions for sensor noise
-  normal_distribution<double> N_x_init(0, std[0]);
-  normal_distribution<double> N_y_init(0, std[1]);
-  normal_distribution<double> N_theta_init(0, std[2]);
+  // define normal (Gaussian) distributions for sensor noise
+  normal_distribution<double> dist_x(0, std[0]);
+  normal_distribution<double> dist_y(0, std[1]);
+  normal_distribution<double> dist_theta(0, std[2]);
 
   // initialize particles
   for (int i = 0; i < num_particles; i++) {
@@ -45,9 +45,9 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     p.weight = 1.0;
 
     // add noise
-    p.x += N_x_init(gen);
-    p.y += N_y_init(gen);
-    p.theta += N_theta_init(gen);
+    p.x += dist_x(gen);
+    p.y += dist_y(gen);
+    p.theta += dist_theta(gen);
 
     particles.push_back(p);
   }
@@ -61,31 +61,29 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	//  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
 	//  http://www.cplusplus.com/reference/random/default_random_engine/
 
-	// define Gaussian sensor noise distributions
-  normal_distribution<double> N_x(0, std_pos[0]);
-  normal_distribution<double> N_y(0, std_pos[1]);
-  normal_distribution<double> N_theta(0, std_pos[2]);
+	// define normal (Gaussian) distributions for sensor noise
+	normal_distribution<double> dist_x(0, std[0]);
+  normal_distribution<double> dist_y(0, std[1]);
+  normal_distribution<double> dist_theta(0, std[2]);
 
 	// add measurements to each particle
-	for (int i = 0; i < num_particles; i++)
-	{
-		double N_x, N_y, N_theta;
+	  for (int i = 0; i < num_particles; i++) {
 
-		if(yaw_rate == 0){
-			N_x = particles[i].x + velocity * delta_t * cos(particles[i].theta);
-			N_y = particles[i].y + velocity * delta_t * sin(particles[i].theta);
-			N_theta = particles[i].theta;
-		}
-		else{
-			N_x = particles[i].x + velocity / yaw_rate * (sin(particles[i].theta + yaw_rate * delta_t) - sin(particles[i].theta));
-      N_y = particles[i].y + velocity/yaw_rate * (cos(particles[i].theta) - cos(particles[i].theta + yaw_rate * delta_t));
-      N_theta = particles[i].theta + yaw_rate * delta_t;
-		}
+	    // calculate new state
+	    if (fabs(yaw_rate) < 0.00001) {
+	      particles[i].x += velocity * delta_t * cos(particles[i].theta);
+	      particles[i].y += velocity * delta_t * sin(particles[i].theta);
+	    }
+	    else {
+	      particles[i].x += velocity / yaw_rate * (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta));
+	      particles[i].y += velocity / yaw_rate * (cos(particles[i].theta) - cos(particles[i].theta + yaw_rate*delta_t));
+	      particles[i].theta += yaw_rate * delta_t;
+	    }
 
-		// add noise
-		particles[i].x += N_x(gen);
-    particles[i].y += N_y(gen);
-    particles[i].theta += N_theta(gen);
+	    // add noise
+	    particles[i].x += dist_x(gen);
+	    particles[i].y += dist_y(gen);
+	    particles[i].theta += dist_theta(gen);
 	}
 }
 
