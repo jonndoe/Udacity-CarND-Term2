@@ -28,7 +28,7 @@ void ParticleFilter::init(double x, double y, double theta, double std_pos[]) {
 	// Add random Gaussian noise to each particle.
 	// NOTE: Consult particle_filter.h for more information about this method (and others in this file).
 
-	num_particles = 110;
+	num_particles = 100;
 
   // define normal (Gaussian) distributions for sensor noise
   normal_distribution<double> dist_x(0, std_pos[0]);
@@ -76,8 +76,8 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	      particles[i].y += velocity * delta_t * sin(particles[i].theta);
 	    }
 	    else {
-	      particles[i].x += velocity / yaw_rate * (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta));
-	      particles[i].y += velocity / yaw_rate * (cos(particles[i].theta) - cos(particles[i].theta + yaw_rate*delta_t));
+	      particles[i].x += velocity / yaw_rate * (sin(particles[i].theta+yaw_rate*delta_t) - sin(particles[i].theta));
+	      particles[i].y += velocity / yaw_rate * (cos(particles[i].theta) - cos(particles[i].theta+yaw_rate*delta_t));
 	      particles[i].theta += yaw_rate * delta_t;
 	    }
 
@@ -106,7 +106,7 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 		// init id of landmark to associate with closest measurement
 		int landmark_id = -1;
 
-		for(int j=0; j<predicted.size(); j++) {
+		for(int j=0; j < predicted.size(); j++) {
 
 					// get current prediction
 					LandmarkObs predicted_measurement = predicted[j];
@@ -164,8 +164,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     	vector<LandmarkObs> transformed_observations;
 
     	for (int k = 0; k < observations.size(); k++) {
-    		double tr_x = observations[k].x*cos(theta) - observations[k].y * sin(theta) + x;
-    		double tr_y = observations[k].x*sin(theta) + observations[k].y * cos(theta) + y;
+    		double tr_x = observations[k].x * cos(theta) - observations[k].y * sin(theta) + x;
+    		double tr_y = observations[k].x * sin(theta) + observations[k].y * cos(theta) + y;
 
     		LandmarkObs transformed_ob;
     		transformed_ob.id = observations[k].id;
@@ -173,7 +173,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     		transformed_ob.y = tr_y;
 
     		transformed_observations.push_back(transformed_ob);
-
     	}
 
     	dataAssociation(predicted_landmarks, transformed_observations);
