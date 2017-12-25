@@ -36,19 +36,19 @@ Here is an example of this progressive convergence for a robot navigating the fl
 
 For a vehicle traveling in one dimension, we might envision the motion model relative to landmarks as follows:
 
-<img src="slides/slide09-landmarks.png" width="70%" /></a>
+<img src="slides/slide09-landmarks.png" width="100%" /></a>
 
 ##### &nbsp;
 
 For a vehicle traveling in two dimensions (as in this project), we can picture the motion model relative to the landmarks like this:
 
-<img src="slides/slide09-landmark-map.png" width="70%" /></a>
+<img src="slides/slide09-landmark-map.png" width="60%" /></a>
 
 ##### &nbsp;
 
 In constructing the particle filter, here is an overview of the inputs and logic steps.
 
-<img src="slides/slide08-process-flow.png" width="70%" /></a>
+<img src="slides/slide08-process-flow.png" width="100%" /></a>
 
 ## Results
 Here is a video showing the output of the particle filter within the simulator.
