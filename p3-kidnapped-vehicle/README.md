@@ -22,11 +22,15 @@ At a high-level, the particle filter essentially makes a series of random guesse
 
 Here is an example of this progressive convergence for a robot navigating the floor of an office building. Notice how the particles are initially much more dispersed and then begin to cluster around the most likely locations given the lidar observations relative to known landmarks on the map.
 
-<img src="slides/slide07a-particle-filter-demo.png" width="40%" /></a> &rarr;
-<img src="slides/slide07b-particle-filter-demo.png" width="40%" /></a> &rarr;
 ##### &nbsp;
-&rarr; <img src="slides/slide07c-particle-filter-demo.png" width="40%" /></a> &rarr;
-<img src="slides/slide07d-particle-filter-demo.png" width="40%" /></a>
+
+<img src="slides/slide07a-particle-filter-demo.png" width="45%" /></a> &rarr; &rarr;
+<img src="slides/slide07b-particle-filter-demo.png" width="45%" /></a> &rarr; &rarr;
+
+##### &nbsp;
+
+&rarr; <img src="slides/slide07c-particle-filter-demo.png" width="45%" /></a> &rarr; &rarr;
+<img src="slides/slide07d-particle-filter-demo.png" width="45%" /></a>
 
 ##### &nbsp;
 
@@ -40,15 +44,11 @@ For a vehicle traveling in two dimensions (as in this project), we can picture t
 
 <img src="slides/slide09-landmark-map.png" width="70%" /></a>
 
-
 ##### &nbsp;
 
 In constructing the particle filter, here is an overview of the inputs and logic steps.
 
 <img src="slides/slide08-process-flow.png" width="70%" /></a>
-
-
-
 
 ## Results
 Here is a video showing the output of the particle filter within the simulator.
@@ -62,7 +62,6 @@ The blue car is the ground truth of the vehicle's actual location. The goal is t
 ##### &nbsp;
 
 <img src="results/final-result.png" width="60%" /></a>
-
 
 ##### &nbsp;
 
