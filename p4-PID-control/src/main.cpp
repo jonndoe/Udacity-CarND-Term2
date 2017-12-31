@@ -33,7 +33,18 @@ int main()
   uWS::Hub h;
 
   PID pid;
+
   // TODO: Initialize the pid variable.
+  double Kp0 = 0.15;
+  double Ki0 = 0.00;
+  double Kd0 = 2.5;
+  double alpha_p = 0.000;
+  double alpha_i = 0.00025;
+  double alpha_d = 0.000;
+  double  v = 0;
+  double  mem_frac = 0.95;
+
+  pid.Init(Kp0,Ki0,Kd0,alpha_p,alpha_i,alpha_d,v,mem_frac);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -58,6 +69,46 @@ int main()
           * another PID controller to control the speed!
           */
           
+          // Update coefficients according to current speed
+          pid.UpdateCoefficients(pid.Kp0_, pid.Ki0_, pid.Kd0_, pid.alpha_p_, pid.alpha_i_,pid.alpha_d_, speed);
+          pid.UpdateError(cte);
+
+          static double throttle = 1;
+          static int brake_iters = 0;
+          static bool brake = false;
+
+          if( (fabs(pid.cte_-pid.cte_prev_) > 0.12)  && brake_iters == 0) {
+            brake_iters = 5;
+            brake = true;
+          }
+
+          // Steering Control
+          static double steering_prev = 0;
+          steer_value = - pid.TotalError();
+          steer_value = 0.7 * steering_prev + 0.3* steer_value;
+
+          // Throttle control. Brake in emergencies, otherwise go as fast as possible.
+          const double target_speed = 100;
+
+          if(!brake){
+            if (speed < target_speed){
+              throttle +=0.1;
+              if (throttle > 1) throttle = 1;
+            }
+            else if (speed > target_speed) {
+              throttle = 0.5;
+            }
+          }
+          else {
+            throttle = -0.0;
+            brake_iters--;
+            if (brake_iters == 0 ) {
+              brake = false;
+              throttle = 1;
+            }
+            std::cout << brake_iters << std::endl;
+          }
+
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
 
