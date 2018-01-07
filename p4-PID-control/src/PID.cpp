@@ -54,7 +54,7 @@ void PID::UpdateError(double cte) {
 
 	// debugging
 	if (DEBUG)
-		printf("\np_error : %.02f i_error: %.02f d_error: %.02f", p_error, i_error, d_error);
+		printf("\np_error: %.02f i_error: %.02f d_error: %.02f", p_error, i_error, d_error);
 }
 
 void PID::Twiddle(double cte) {

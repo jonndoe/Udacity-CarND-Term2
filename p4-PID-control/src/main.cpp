@@ -60,14 +60,20 @@ int main(int argc, char** argv)
 					// j[1] is the data JSON object
 					double cte = std::stod(j[1]["cte"].get<std::string>());
 					double speed = std::stod(j[1]["speed"].get<std::string>());
-					//double angle = std::stod(j[1]["steering_angle"].get<std::string>());
+					double angle = std::stod(j[1]["steering_angle"].get<std::string>());
 					double steer_value;
-
+          /*
+          * Calcuate steering value here, remember the steering value is
+          * [-1, 1].
+          * NOTE: Feel free to play around with the throttle and speed. Maybe use
+          * another PID controller to control the speed!
+          */
+          
 					// Coefficients to control speed relative to steering target
 					float min_speed = 40.0;
 					float add_speed = 70.0;
 
-					// Calculate steering Value
+					// Calculate steering value
 					steering_pid.UpdateError(cte);
 					steer_value = steering_pid.Calculate();
 
@@ -82,10 +88,10 @@ int main(int argc, char** argv)
 					double throttle_value = throttle_pid.Calculate();
 
 					printf("\nSteering coefficients: (%.06f, %.06f, %.06f)", steering_pid.Kp,steering_pid.Ki,steering_pid.Kd );
-					printf("\nThrottle coefficients: (%.06f, %.06f, %.06f)\n", throttle_pid.Kp,throttle_pid.Ki,throttle_pid.Kd );
+					printf("\nThrottle coefficients: (%.06f, %.06f, %.06f)", throttle_pid.Kp,throttle_pid.Ki,throttle_pid.Kd );
 
           // DEBUG
-					std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+					std::cout << "\nCTE: " << cte << " Steering Value: " << steer_value << std::endl;
 
 					json msgJson;
 					msgJson["steering_angle"] = steer_value;
