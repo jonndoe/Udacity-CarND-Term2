@@ -54,7 +54,7 @@ void PID::UpdateError(double cte) {
 
 	// debugging
 	if (DEBUG)
-		printf("\n p_error : %.02f i_error: %.02f d_error: %.02f", p_error, i_error, d_error);
+		printf("\np_error : %.02f i_error: %.02f d_error: %.02f", p_error, i_error, d_error);
 }
 
 void PID::Twiddle(double cte) {
@@ -96,7 +96,7 @@ void PID::Twiddle(double cte) {
         break;
       }
     }
-    cout << "\n P values: {"<< p[0] << ", "<< p[1]  << ", "<< p[2] << "}"<< endl;
+    cout << "\nP values: {"<< p[0] << ", "<< p[1]  << ", "<< p[2] << "}"<< endl;
     p_error = dp[0];
     i_error = dp[1];
     d_error = dp[2];
@@ -118,7 +118,7 @@ double PID::Calculate() {
 
   // debugging
 	if(DEBUG)
-		printf("\n Output is %.03f", output_val);
+		printf("\nOutput is %.03f", output_val);
 
 	// Return output
 	return output_val;
@@ -130,7 +130,7 @@ double PID::TotalError() {
 
   // debugging
   if(DEBUG)
-    printf("\n Total Error is %.03f", tot_error);
+    printf("\nTotal Error is %.03f", tot_error);
 
   return tot_error;
 }

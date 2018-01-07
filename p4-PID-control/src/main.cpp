@@ -64,8 +64,8 @@ int main(int argc, char** argv)
 					double steer_value;
 
 					// Coefficients to control speed relative to steering target
-					float min_speed = 20.0;
-					float add_speed = 30.0;
+					float min_speed = 40.0;
+					float add_speed = 70.0;
 
 					// Calculate steering Value
 					steering_pid.UpdateError(cte);

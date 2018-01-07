@@ -17,7 +17,9 @@ public:
 	double Kp;
 	double Ki;
 	double Kd;
-  int i;  // parameter index
+
+  // Parameter index
+  int i;
 
 	// Count of error updates received
 	int update_count_;
