@@ -70,8 +70,8 @@ int main(int argc, char** argv)
           */
 
 					// Minimum + additional speed components used to calculate target speed
-					float min_speed = 40.0;
-					float add_speed = 70.0;
+					float min_speed = 30.0;
+					float add_speed = 55.0;
 
 					// Calculate steering value
 					steering_pid.UpdateError(cte);

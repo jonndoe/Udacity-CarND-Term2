@@ -19,9 +19,9 @@ void PID::Init(double Kp, double Ki, double Kd) {
   this->Kp = Kp;
   this->Ki = Ki;
   this->Kd = Kd;
-  p_error = 0.1;
-  i_error = 0.001;
-  d_error = 0.1;
+  p_error = 0.0;
+  i_error = 0.0;
+  d_error = 0.0;
 
   // Initialize counter
 	update_count_ = 0;
