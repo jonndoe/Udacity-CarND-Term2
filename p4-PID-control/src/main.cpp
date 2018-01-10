@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 	PID steering_pid;
 	PID throttle_pid;
 
-	// Gain factor for initial steering PID and target speed relative to steering angle
+	// Gain factor for determining target speed relative to steering angle
 	double steering_gain = 3.75;
 
 	// Initialize the steering PID controller
@@ -68,8 +68,8 @@ int main(int argc, char** argv)
           * NOTE: Feel free to play around with the throttle and speed. Maybe use
           * another PID controller to control the speed!
           */
-          
-					// Coefficients to control speed relative to steering target
+
+					// Minimum + additional speed components used to calculate target speed
 					float min_speed = 40.0;
 					float add_speed = 70.0;
 
