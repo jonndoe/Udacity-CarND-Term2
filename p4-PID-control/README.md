@@ -42,16 +42,31 @@ Here are the specific steps I took:
 1. **Twiddle**. By this point, I was tired of manual tuning and figured the Integral coefficient (Ki) would be very low since the simulator (presumably) should have very little bias or steady-state error. So, I skipped manual tuning of Ki and implemented the Twiddle algorithm to handle all of the tuning moving forward. I used Sebastian's Python version of the Twiddle algorithm from the lessons as a template. But, progressing through the steps of the algorithm in C++ was a challenge. I failed to get it working using `for` and `while` loops, and ultimately treated the different steps as states using `switch` and `case` (code found here[]()). Once the algorithm was working, I would repeatedly execute the program in 'twiddle' mode to find best steering parameters at increasingly higher speeds. Eventually, I could fine-tune the parameters by just letting the car drive around the track in twiddle mode for dozens of laps at a time. The car seemed to top-out at 50 MPH with just the steering controller, so I then started working on the throttle controller.
 1. **Throttle Controller**. I repeated the same basic steps as I did for the steering controller: starting with a heuristic parameter set, doing some manual tuning at lower speeds, and then gradually increasing the speed and leveraging the Twiddle algorithm to do most of the tuning.
 I testing a few different approaches to the controller logic. And after numerous blunders, such as trying to use Twiddle to optimize a `speed_error` instead of using CTE for both controllers, I finally got the controller to dynamically adjust the speed based on the steering angle (i.e., less throttle for turns, more throttle in straightaways). But, the car was unable to drive safely through sharp turns at higher speeds (> 50 MPH).
-1. **Steering Gain**. To address this problem, it became clear that another coefficient or gain factor was needed to amplify the throttle response. So, a `steering_gain` coefficient was added to calculate the additional speed (`add_speed`) the car should target on top of its baseline speed (`min_speed`). (Code found [here]()). Since there are only a few sharp turns on this particular track, and by this point the other parameters were well-tuned, I figured I could just tune the steering gain parameter by hand. But, if the track had lots of sharp turns of varying magnitudes, you'd probably need to use Twiddle to tune it. 
+1. **Steering Gain**. To address this problem, it became clear that another coefficient or gain factor was needed to amplify the throttle response. So, a `steering_gain` coefficient was added to calculate the additional speed (`add_speed`) the car should target on top of its baseline speed (`min_speed`). (Code found [here]()). Since there are only a few sharp turns on this particular track, and by this point the other parameters were well-tuned, I figured I could just tune the steering gain parameter by hand. But, if the track had lots of sharp turns of varying magnitudes, you'd probably need to use Twiddle to tune it.
 
 ##### &nbsp;
 
-
 ## Results
-Ultimately, I was able to get the car to safely navigate the track three times with a top speed of 88 MPH. Here is a video showing the results.
+Ultimately, I was able to get the car to safely navigate the track at least three times with a top speed of 88 MPH.
+
+Here is a video showing the results.
 
 <a href="https://youtu.be/vfcgnVPeyVs"><img src="results/video-thumbnail.png" width="60%" /></a>
 
+##### &nbsp;
+
+The final parameters can be found [here]():
+
+```
+// Gain factor for determining target speed relative to steering angle
+double steering_gain = 3.75;
+
+// Initialize the steering PID controller
+steering_pid.Init(0.09, 0.00002, 2.3);
+
+// Initialize the throttle PID controller
+throttle_pid.Init(0.115, 0.0006, 0.855);
+```
 
 ##### &nbsp;
 
