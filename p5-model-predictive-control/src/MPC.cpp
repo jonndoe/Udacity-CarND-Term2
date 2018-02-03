@@ -141,6 +141,11 @@ class FG_eval {
 MPC::MPC() {}
 MPC::~MPC() {}
 
+// Set lower and upper limits for variables.
+const double bound = 1.0e3; // variables
+const double deg25rad = 0.436332; // delta
+const double throttle_limit = 1.0; // throttle
+
 vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   bool ok = true;
   typedef CPPAD_TESTVECTOR(double) Dvector;
@@ -173,19 +178,19 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // TODO: Set lower and upper limits for variables.
   for (int i = 0; i < delta_start; i++) {
-    vars_lowerbound[i] = -BOUND;
-    vars_upperbound[i] = BOUND;
+    vars_lowerbound[i] = -bound;
+    vars_upperbound[i] = bound;
   }
   // The upper and lower limits of delta are set to -25 and 25
   // degrees (values in radians).
   for (int i = delta_start; i < a_start; i++) {
-    vars_lowerbound[i] = -DED25RAD;
-    vars_upperbound[i] = DED25RAD;
+    vars_lowerbound[i] = -deg25rad;
+    vars_upperbound[i] = deg25rad;
   }
   // Acceleration/decceleration upper and lower limits
   for (int i = a_start; i < n_vars; i++) {
-    vars_lowerbound[i] = -MAXTHR;
-    vars_upperbound[i] = MAXTHR;
+    vars_lowerbound[i] = -throttle_limit;
+    vars_upperbound[i] = throttle_limit;
   }
 
   // Lower and upper limits for the constraints
