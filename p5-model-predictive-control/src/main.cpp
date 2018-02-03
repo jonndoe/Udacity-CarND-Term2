@@ -44,8 +44,7 @@ double polyeval(Eigen::VectorXd coeffs, double x) {
 // Fit a polynomial.
 // Adapted from
 // https://github.com/JuliaMath/Polynomials.jl/blob/master/src/Polynomials.jl#L676-L716
-Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
-                        int order) {
+Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals, int order) {
   assert(xvals.size() == yvals.size());
   assert(order >= 1 && order <= xvals.size() - 1);
   Eigen::MatrixXd A(xvals.size(), order + 1);
@@ -91,28 +90,70 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double steering_angle = j[1]["steering_angle"];
+          double throttle = j[1]["throttle"];
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
-          *
           * Both are in between [-1, 1].
           *
           */
-          double steer_value;
-          double throttle_value;
+          const int n_way = ptsx.size(); // number of waypoints
+
+          Eigen::VectorXd waypoints_x(n_way);
+          Eigen::VectorXd waypoints_y(n_way);
+
+          // Transform waypoints to be from car's perspective
+          // this means we can consider px = 0, py = 0, and psi = 0
+          // greatly simplifying future calculations
+          for (int i = 0; i < n_way; i++) {
+            double dx = ptsx[i] - px;
+            double dy = ptsy[i] - py;
+            waypoints_x[i] = dx * cos(-psi) - dy * sin(-psi);
+            waypoints_y[i] = dx * sin(-psi) + dy * cos(-psi);
+          }
+
+          auto coeffs = polyfit(waypoints_x, waypoints_y, 3); // fit waypoints
+          const double cte = polyeval(coeffs, 0); // px = 0, py = 0
+          const double epsi = -atan(coeffs[1]); // -f'(0)
+
+          // Kinematic model that predicts vehicle state accounting for latency
+          const double lat = 0.1; // latency
+          const double px_lat = v * lat;
+          const double py_lat = 0;
+          const double psi_lat = -v * steering_angle * lat / LF;
+          const double v_lat = v + throttle * lat;
+          const double cte_lat = cte + v * sin(epsi) * lat;
+          const double epsi_lat = epsi + psi_lat;
+
+          Eigen::VectorXd state(6);
+          state << px_lat, py_lat, psi_lat, v_lat, cte_lat, epsi_lat;
+          vector<double> vars = mpc.Solve(state, coeffs);
+
+          double steer_value = vars[0] / deg2rad(25); // normalize to [-1,1]
+          double throttle_value = vars[1];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value;
+          msgJson["steering_angle"] = -steer_value;
           msgJson["throttle"] = throttle_value;
 
-          //Display the MPC predicted trajectory 
+          //Display the MPC predicted trajectory
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
+
+          for (int i = 2; i < vars.size(); i ++) {
+            if (i%2 == 0) {
+              mpc_x_vals.push_back(vars[i]);
+            }
+            else {
+              mpc_y_vals.push_back(vars[i]);
+            }
+          }
 
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
@@ -123,6 +164,11 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
+
+          for (double i = 0; i < 100; i += 3){
+            next_x_vals.push_back(i);
+            next_y_vals.push_back(polyeval(coeffs, i));
+          }
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
