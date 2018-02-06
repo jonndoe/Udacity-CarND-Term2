@@ -10,12 +10,12 @@ size_t N = 17;
 double dt = 0.1;
 
 // Reference velocity, cross track error, and orientation errors.
-const double r_v = 80;
+const double r_v = 100;
 const double r_cte = 0;
 const double r_epsi = 0;
 
 // Weights parameters for cost function
-const double w_cte = 1000;
+const double w_cte = 100;
 const double w_epsi = 0.4;
 const double w_v = 0.3;
 const double w_delta = 500000;
