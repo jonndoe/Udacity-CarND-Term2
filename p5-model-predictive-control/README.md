@@ -36,11 +36,39 @@ Here are the equations used to calculate the actuator commands:
 
 ##### &nbsp;
 
-[Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L120) is the part of my code where this model is implemented, accounting for system latency. And [here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial and error, plus a few hints from threads in the project's Slack channel.
+[Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L120) is the part of my code where this model is implemented, accounting for system latency. And [here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial and error, plus a few hints from threads in the project's Slack channel. Once I was able to get the car to navigate the track at 30 MPH, I then steadily increased the speed and fine tuned the parameters.
 
-I ultimately settled on values of `N = 17` (timestep length) and `dt = 0.1` (elapsed duration between timesteps). I experimented with higher values for `N`, but it required more computation and predicting that far into the future seemed unnecessary even at speeds of 70-80 MPH. If the car were traveling at 100 MPH, then perhaps 20 timesteps would be appropriate. But any more than that is probably a waste of computation and could hinder the model's ability to produce actuator commands quickly enough. Conversely, with lower values for N, the model would not take into account enough of the upcoming track, resulting in a set of actuator commands that don't properly plan for sharp turns.
+I ultimately settled on values of `N = 17` (timestep length) and `dt = 0.1` (elapsed duration between timesteps). I experimented with higher values for `N`, but it required more computation and predicting that far into the future was not necessary at speeds of 70-80 MPH. If the car was traveling at 100 MPH, then perhaps 20 timesteps would be appropriate. But any more than that is probably a waste of computation and could hinder the model's ability to produce actuator commands quickly enough. Conversely, with lower values for N, the model would not take into account enough of the upcoming track when traveling at high speeds. This resulted in a set of actuator commands that didn't properly plan for sharp turns, and therefore the car would veer off the track. So, as I increased the target speed, I also increased the number of timesteps in the model.
 
-A similar pattern emerged while experimenting with values for `dt`. With smaller values, the model requires more compute resources, which are seem superfluous unless the vehicle is traveling at very high speeds (100+ MPH). At my target speed of 70+ MPH, producing actuator commands more frequently than 0.1 seconds seemed unnecessary based on my initial trial runs. This gave the car enough time to compute and execute the commands and drive smoothly around the track. However, with larger values for `dt` there was too much time elapsing between actuations, and therefore, the car would react too slowly to turns when traveling at higher speeds. 
+I also experimented with different values for `dt`. With smaller values, the model produces actuator commands too quickly, so the car is constantly turning back and forth. Generating commands at this frequency is superfluous unless the vehicle is traveling at very high speeds (100+ MPH). However, with larger values for `dt` there was too much time elapsing between actuations. So, although the car would drive smoothly, it would react too slowly to turns when traveling at higher speeds and inevitably veer off the track.  
+
+The other critical parameters are the weights applied to the variables within the kinematic model. For example, in developing my model, I found that placing a lot of weight on the steering delta produced the best results. So, the value for `w_delta` is very high.  [Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L51) is how the weights are represented in the code:
+
+```
+// The cost is stored is the first element of `fg`.
+// Any additions to the cost should be added to `fg[0]`.
+fg[0] = 0;
+
+// The part of the cost based on the reference state.
+for (int i = 0; i < N; i++) {
+  fg[0] += w_cte * CppAD::pow(vars[cte_start + i] - r_cte, 2);
+  fg[0] += w_epsi * CppAD::pow(vars[epsi_start + i] - r_epsi, 2);
+  fg[0] += w_v * CppAD::pow(vars[v_start + i] - r_v, 2);
+}
+
+// Minimize the use of actuators.
+for (int i = 0; i < N - 1; i++) {
+  fg[0] += w_delta * CppAD::pow(vars[delta_start + i], 2);
+  fg[0] += w_a * CppAD::pow(vars[a_start + i], 2);
+}
+
+// Minimize the value gap between sequential actuations.
+for (int i = 0; i < N - 2; i++) {
+  fg[0] += w_ddelta * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+  fg[0] += w_da * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
+}
+```
+
 
 ##### &nbsp;
 
