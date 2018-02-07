@@ -77,8 +77,6 @@ for (int i = 0; i < N - 2; i++) {
 }
 ```
 
-
-
 ##### &nbsp;
 
 ## Results
@@ -88,10 +86,13 @@ Ultimately, I was able to get the car to safely navigate the track at least 2 ti
 
 <a href="https://youtu.be/ATElmSKxF2g"><img src="results/video-thumbnail.png" width="60%" /></a>
 
-
-
 ##### &nbsp;
+
 ---
+In case you want to run this project yourself, below is the project starter code.
+
+# Project Starter Code
+This repository contains all the code needed to complete the final project for the Localization course in Udacity's Self-Driving Car Nanodegree.
 
 ## Dependencies
 
