@@ -11,7 +11,7 @@ The goal of this project is to autonomously drive a car around the track in a si
 ##### &nbsp;
 
 ## Background
-This is the third project in which we've developed a model to navigate the simulator track, each of them utilizing different models types and data inputs. The first project was [Behavioral Cloning](https://github.com/tommytracey/udacity/tree/master/self-driving-nano/projects/3-behavioral-cloning), in which we developed a deep learning model based on inputs from three cameras mounted on the front of the car. For the second project, we built a [PID Controller](https://github.com/tommytracey/Udacity-CarND-Term2/tree/master/p4-PID-control) based on the cross-track error (CTE), i.e. the distance from the center of the track. For this third project, we need to build a Model Predictive Controller (MPC) given the vehicle's telemetry data (position, velocity, heading) and a series of waypoints for the stretch of track immediately ahead.
+This is the third project in which we've developed a model to navigate the simulator track, each of them utilizing different types of models and data inputs. The first project was [Behavioral Cloning](https://github.com/tommytracey/udacity/tree/master/self-driving-nano/projects/3-behavioral-cloning), in which we developed a deep learning model based on inputs from three cameras mounted on the front of the car. For the second project, we built a [PID Controller](https://github.com/tommytracey/Udacity-CarND-Term2/tree/master/p4-PID-control) based on the cross-track error (CTE), i.e. the distance from the center of the track. For this third project, we need to build a Model Predictive Controller (MPC) given the vehicle's telemetry data (position, velocity, heading) and a series of waypoints for the stretch of track immediately ahead.
 
 The advantage of a MPC is that it uses third order polynomials to determine the best path for the vehicle. Then, it uses a kinematic model and cost function to find the best actions (steering, throttle) to achieve this path, while accounting for the vehicle's constraints (e.g. its maximum steering angle). This type of model requires more computation, but it results in much smoother steering and throttle controls. However, one of the challenges is to ensure your model is efficient enough to control the vehicle in real-time, plus the 0.1 second delay that's added to the simulation to mimic real-world system latency.
 
@@ -24,34 +24,33 @@ The kinematic model consists of a vehicle state and actuators. The vehicle state
 
 Here are the kinematic equations used to update the vehicle state:
 
-<img src="results/kinematic-equations.png" width="75%" /></a>
+<img src="results/equations.png" width="75%" /></a>
 
 ##### &nbsp;
 
 The actuators are the set of controls used to navigate the vehicle. Only two actuators are used in this project: `delta` and `acceleration`. Acceleration (`a`) is the throttle value between -1 and 1 that should be applied to vehicle (negative values are for braking). Meanwhile, `delta` represents the steering angle that should be applied, accounting for the constraints to vehicle's steering radius.
-
-Here are the equations used to calculate the actuator commands:
-
-<img src="results/actuator-equations.png" width="75%" /></a>
 
 ##### &nbsp;
 
 Once the model and parameters are setup, we then cycle through these steps:
 
 1. Current state is passed to the model predictive controller (as the new initial state)
-1. The optimization solver is called. The solver returns the vector of actuators that minimizes the cost function.
-1. Apply the steering and throttle commands.
+1. The optimization solver is called.
+1. The solver returns the vector of actuators that minimizes the cost function.
+1. The steering and throttle commands are applied to the vehicle.
 1. Repeat
 
 ##### &nbsp;
 
-[Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L120) is the part of my code where this model is implemented, accounting for system latency. And [here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial and error, plus a few hints from threads in the project Slack channel. Once I was able to get the car to navigate the track at 30 MPH, I then steadily increased the speed and fine tuned the parameters.
+[Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L120) is the part of my code where the kinematic model is implemented, accounting for system latency. And [here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial and error, plus a few hints from threads in the project Slack channel. Once I was able to get the car to navigate the track at 30 MPH, I then steadily increased the speed and fine tuned the parameters.
 
-I ultimately settled on values of `N = 17` (timestep length) and `dt = 0.1` (elapsed duration between timesteps). I experimented with higher values for `N`, but it required more computation and predicting that far into the future was not necessary at speeds of 70-80 MPH. If the car was traveling at 100 MPH, then perhaps 20 timesteps would be appropriate. But any more than that is probably a waste of computation and could hinder the model's ability to produce actuator commands quickly enough. Conversely, with lower values for N, the model would not take into account enough of the upcoming track when traveling at high speeds. This resulted in a set of actuator commands that didn't properly plan for sharp turns, and therefore the car would veer off the track. So, as I increased the target speed, I also increased the number of timesteps in the model.
+I ultimately settled on values of `N = 17` (timestep length) and `dt = 0.1` (elapsed duration between timesteps). I experimented with higher values for `N`, but it required more computation and predicting that far into the future was not necessary at speeds of 70-80 MPH. If the car was traveling at 100 MPH, then perhaps 20 timesteps would be appropriate. But any more than that is probably a waste of computation and could hinder the model's ability to produce actuator commands quickly enough. Conversely, with lower values for N, the model would not take into account enough of the upcoming track when traveling at high speeds. This resulted in a set of actuator commands that didn't properly plan for sharp turns, and therefore the car would veer off the track. So, as I increased the target speed, I also increased the number of timesteps in the model. My first working version had `N = 10` and I worked my way up from there.
 
-I also experimented with different values for `dt`. With smaller values, the model produces actuator commands too quickly, so the car is constantly turning back and forth. Generating commands at this frequency is superfluous unless the vehicle is traveling at very high speeds (100+ MPH). However, with larger values for `dt` there was too much time elapsing between actuations. So, although the car would drive smoothly, it would react too slowly to turns when traveling at higher speeds and inevitably veer off the track.  
+I also experimented with different values for `dt`. With smaller values, the model produces actuator commands too quickly, so the car drives erratically, i.e. it's constantly turning back and forth and making too many throttle changes. I determined that generating actuators at this frequency is superfluous unless the vehicle is traveling at very high speeds (100+ MPH). Conversely, with larger values for `dt`, too much time elapsed between actuations. So, although the car would drive smoothly, it would react too slowly to turns when traveling at higher speeds and inevitably veer off the track.  
 
-The other critical parameters are the weights applied to the variables within the kinematic model. For example, in developing my model, I found that placing a lot of weight on the steering delta produced the best results. So, the value for `w_delta` is very high.  [Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L51) is how the weights are represented in the code:
+The other critical parameters are the weights applied to the variables within the kinematic model. For example, in developing my model, I found that placing a lot of weight on the steering delta produced the best results. So, the value for `w_delta` is very high. I also found that putting more weight on the cross-track error was effective, therefore the value for `w_cte` is relatively high.
+
+[Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L51) is how the weight parameters are applied within the code:
 
 ```
 // The cost is stored is the first element of `fg`.
