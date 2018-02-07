@@ -52,7 +52,7 @@ The other critical parameters are the weights applied to the variables within th
 
 [Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L51) is how the weight parameters are applied within the code:
 
-```
+```c++
 // The cost is stored is the first element of `fg`.
 // Any additions to the cost should be added to `fg[0]`.
 fg[0] = 0;
