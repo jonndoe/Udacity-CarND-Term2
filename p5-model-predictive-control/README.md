@@ -24,13 +24,9 @@ The kinematic model consists of a vehicle state and actuators. The vehicle state
 
 Here are the kinematic equations used to update the vehicle state:
 
-<img src="results/equations.png" width="75%" /></a>
-
-##### &nbsp;
+<img src="results/equations.png" width="60%" /></a>
 
 The actuators are the set of controls used to navigate the vehicle. Only two actuators are used in this project: `delta` and `acceleration`. Acceleration (`a`) is the throttle value between -1 and 1 that should be applied to vehicle (negative values are for braking). Meanwhile, `delta` represents the steering angle that should be applied, accounting for the constraints to vehicle's steering radius.
-
-##### &nbsp;
 
 Once the model and parameters are setup, we then cycle through these steps:
 
@@ -39,8 +35,6 @@ Once the model and parameters are setup, we then cycle through these steps:
 1. The solver returns the vector of actuators that minimizes the cost function.
 1. The steering and throttle commands are applied to the vehicle.
 1. Repeat
-
-##### &nbsp;
 
 [Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L120) is the part of my code where the kinematic model is implemented, accounting for system latency. And [here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial and error, plus a few hints from threads in the project Slack channel. Once I was able to get the car to navigate the track at 30 MPH, I then steadily increased the speed and fine tuned the parameters.
 
