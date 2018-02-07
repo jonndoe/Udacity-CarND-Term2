@@ -11,19 +11,11 @@ The goal of this project is to autonomously drive a car around the track in a si
 ##### &nbsp;
 
 ## Background
-This is the third project in which we've developed a model to navigate the simulator track, each of them utilizing different models types and data inputs. The first project was [Behavioral Cloning](), in which we developed a deep learning model based on inputs from three cameras mounted on the front of the car. For the second project, we built a [PID Controller] based on the cross-track error (CTE), i.e. the distance from the center of the track. For this third project, we need to build a Model Predictive Controller (MPC) given the vehicle's telemetry data (position, velocity, heading) and a series of waypoints for the stretch of track immediately ahead.
+This is the third project in which we've developed a model to navigate the simulator track, each of them utilizing different models types and data inputs. The first project was [Behavioral Cloning](https://github.com/tommytracey/udacity/tree/master/self-driving-nano/projects/3-behavioral-cloning), in which we developed a deep learning model based on inputs from three cameras mounted on the front of the car. For the second project, we built a [PID Controller](https://github.com/tommytracey/Udacity-CarND-Term2/tree/master/p4-PID-control) based on the cross-track error (CTE), i.e. the distance from the center of the track. For this third project, we need to build a Model Predictive Controller (MPC) given the vehicle's telemetry data (position, velocity, heading) and a series of waypoints for the stretch of track immediately ahead.
 
 The advantage of a MPC is that it uses third order polynomials to determine the best path for the vehicle. Then, it uses a kinematic model and cost function to find the best actions (steering, throttle) to achieve this path, while accounting for the vehicle's constraints (e.g. its maximum steering angle). This type of model requires more computation, but it results in much smoother steering and throttle controls. However, one of the challenges is to ensure your model is efficient enough to control the vehicle in real-time, plus the 0.1 second delay that's added to the simulation to mimic real-world system latency.
 
-
 ##### &nbsp;
-
-Below is a graph taken from the lesson material that shows how various combinations of these parameters affect the Cross-Track Error (CTE).
-
-<img src="results/pid-cte-graph.png" width="75%" /></a>
-
-##### &nbsp;
-
 
 ## Approach
 For this project we used a global kinematic model, which is a simplification of a dynamic model that ignores physical forces such as gravity, tire friction, and vehicle mass.
@@ -46,6 +38,9 @@ Here are the equations used to calculate the actuator commands:
 
 [Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L120) is the part of my code where this model is implemented, accounting for system latency. And [here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial and error, plus a few hints from threads in the project's Slack channel.
 
+I ultimately settled on values of `N = 17` (timestep length) and `dt = 0.1` (elapsed duration between timesteps). I experimented with higher values for `N`, but it required more computation and predicting that far into the future seemed unnecessary even at speeds of 70-80 MPH. If the car were traveling at 100 MPH, then perhaps 20 timesteps would be appropriate. But any more than that is probably a waste of computation and could hinder the model's ability to produce actuator commands quickly enough. Conversely, with lower values for N, the model would not take into account enough of the upcoming track, resulting in a set of actuator commands that don't properly plan for sharp turns.
+
+A similar pattern emerged while experimenting with values for `dt`. With smaller values, the model requires more compute resources, which are seem superfluous unless the vehicle is traveling at very high speeds (100+ MPH). At my target speed of 70+ MPH, producing actuator commands more frequently than 0.1 seconds seemed unnecessary based on my initial trial runs. This gave the car enough time to compute and execute the commands and drive smoothly around the track. However, with larger values for `dt` there was too much time elapsing between actuations, and therefore, the car would react too slowly to turns when traveling at higher speeds. 
 
 ##### &nbsp;
 
