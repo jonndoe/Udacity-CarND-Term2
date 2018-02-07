@@ -36,7 +36,16 @@ Here are the equations used to calculate the actuator commands:
 
 ##### &nbsp;
 
-[Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L120) is the part of my code where this model is implemented, accounting for system latency. And [here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial and error, plus a few hints from threads in the project's Slack channel. Once I was able to get the car to navigate the track at 30 MPH, I then steadily increased the speed and fine tuned the parameters.
+Once the model and parameters are setup, we then cycle through these steps:
+
+1. Current state is passed to the model predictive controller (as the new initial state)
+1. The optimization solver is called. The solver returns the vector of actuators that minimizes the cost function.
+1. Apply the steering and throttle commands.
+1. Repeat
+
+##### &nbsp;
+
+[Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/main.cpp#L120) is the part of my code where this model is implemented, accounting for system latency. And [here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial and error, plus a few hints from threads in the project Slack channel. Once I was able to get the car to navigate the track at 30 MPH, I then steadily increased the speed and fine tuned the parameters.
 
 I ultimately settled on values of `N = 17` (timestep length) and `dt = 0.1` (elapsed duration between timesteps). I experimented with higher values for `N`, but it required more computation and predicting that far into the future was not necessary at speeds of 70-80 MPH. If the car was traveling at 100 MPH, then perhaps 20 timesteps would be appropriate. But any more than that is probably a waste of computation and could hinder the model's ability to produce actuator commands quickly enough. Conversely, with lower values for N, the model would not take into account enough of the upcoming track when traveling at high speeds. This resulted in a set of actuator commands that didn't properly plan for sharp turns, and therefore the car would veer off the track. So, as I increased the target speed, I also increased the number of timesteps in the model.
 
@@ -68,6 +77,7 @@ for (int i = 0; i < N - 2; i++) {
   fg[0] += w_da * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
 }
 ```
+
 
 
 ##### &nbsp;
