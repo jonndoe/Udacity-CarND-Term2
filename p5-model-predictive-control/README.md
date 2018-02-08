@@ -93,7 +93,29 @@ for (int i = 0; i < N - 2; i++) {
 }
 ```
 
+### Final Parameters
+
 [Here](https://github.com/tommytracey/Udacity-CarND-Term2/blob/master/p5-model-predictive-control/src/MPC.cpp#L8) is the final set of parameters that I arrived at mostly via trial-and-error, plus a few hints from threads in the project Slack channel. Once I was able to get the car to navigate the track at 30 MPH, I then steadily increased the speed and fine tuned the parameters.
+
+```c++
+// TODO: Set the timestep length and duration
+size_t N = 17;
+double dt = 0.1;
+
+// Reference velocity, cross track error, and orientation errors.
+const double r_v = 100;
+const double r_cte = 0;
+const double r_epsi = 0;
+
+// Weights parameters for cost function
+const double w_cte = 100;
+const double w_epsi = 0.4;
+const double w_v = 0.3;
+const double w_delta = 500000;
+const double w_a = 20.0;
+const double w_ddelta = 0.02;
+const double w_da = 0.000025;
+```
 
 ##### &nbsp;
 
@@ -107,10 +129,9 @@ Ultimately, I was able to get the car to safely navigate the track at least 2 ti
 ##### &nbsp;
 
 ---
-In case you want to run this project yourself, below is the project starter code.
 
 # Project Starter Code
-This repository contains all the code needed to complete the final project for the Localization course in Udacity's Self-Driving Car Nanodegree.
+In case you want to run this project yourself, below is the project starter code. This repository contains all the code needed to complete the final project for the Localization course in Udacity's Self-Driving Car Nanodegree.
 
 ## Dependencies
 
