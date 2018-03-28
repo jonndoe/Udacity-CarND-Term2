@@ -5,7 +5,7 @@
 ##### &nbsp;
 
 ## Goal & Background
-As with the previous project working with [Extended Kalman Filters (EKF)](https://github.com/tommytracey/Udacity-CarND-Term2/tree/master/p1-extended-kalman-filter), the goal of this project is to build a tool that can accurately predict the location of a vehicle based on its lidar and radar sensor measurements. Given that different sensors will return different measurements, and that neither of these measurements may accurately reflect the true position of the car, we need to reconcile or "fuse" the various sensor inputs into one accurate prediction. To do this, we use Kalman Filters.
+As with the previous project working with [Extended Kalman Filters (EKF)](https://github.com/tommytracey/Udacity-CarND-Term2/tree/master/p06-extended-kalman-filter), the goal of this project is to build a tool that can accurately predict the location of a vehicle based on its lidar and radar sensor measurements. Given that different sensors will return different measurements, and that neither of these measurements may accurately reflect the true position of the car, we need to reconcile or "fuse" the various sensor inputs into one accurate prediction. To do this, we use Kalman Filters.
 
 The __Unscented__ Kalman Filter (UKF) built in this project is a more sophisticated approach (mathematically) for combining sensor data. And, the UKF performs better than the EKF in many situations since it can leverage different motion models. There are various motion models we could use, such as Constant Velocity (CV), Constant Turn Rate and Velocity (CTRV), Constant Turn Rate and Acceleration (CTRA), and Constant Curvature and Acceleration (CCA).
 
