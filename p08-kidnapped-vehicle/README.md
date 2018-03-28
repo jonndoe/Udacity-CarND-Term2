@@ -1,6 +1,6 @@
 #### Udacity Self-Driving Car Engineer Nanodegree
-
-# Term 2 / Project 3: Particle Filter for Kidnapped Vehicle
+#### Term 2
+# Project 8: Particle Filter for Kidnapped Vehicle
 
 ##### &nbsp;
 
@@ -53,7 +53,7 @@ In constructing the particle filter, here is an overview of the inputs and logic
 ## Results
 Here is a video showing the output of the particle filter within the simulator.
 
-It's a little difficult to see, but the blue circle and black arrow are the real-time estimation of the vehicle’s location and heading. 
+It's a little difficult to see, but the blue circle and black arrow are the real-time estimation of the vehicle’s location and heading.
 
 The blue car is the ground truth of the vehicle's actual location. The goal is to make sure the circle (predicted location) is around the car as it navigates the environment.
 

@@ -1,7 +1,6 @@
 #### Udacity Self-Driving Car Engineer Nanodegree
-
-# Term 2 / Project 4: PID Controller
-
+#### Term 2
+# Project 9: PID Controller
 
 ##### &nbsp;
 

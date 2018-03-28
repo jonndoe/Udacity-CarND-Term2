@@ -1,7 +1,6 @@
 #### Udacity Self-Driving Car Engineer Nanodegree
-
-# Term 2 / Project 5: Model Predictive Controller (MPC)
-
+#### Term 2
+# Project 10: Model Predictive Controller (MPC)
 
 ##### &nbsp;
 

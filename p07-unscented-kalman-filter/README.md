@@ -1,6 +1,6 @@
 #### Udacity Self-Driving Car Engineer Nanodegree
-
-# Term 2 / Project 2: Unscented Kalman Filter
+#### Term 2
+# Project 7: Unscented Kalman Filter
 
 ##### &nbsp;
 
