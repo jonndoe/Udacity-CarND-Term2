@@ -1,0 +1,10 @@
+prefix=/usr/local
+libdir=/home/habrauser/PycharmProjects/Udacity-CarND-Term2/p10-model-predictive-control/Ipopt-3.12.7/Ipopt/src/Apps/AmplSolver
+
+Name: IPOPT
+Description: Ampl Interface TNLP to Ipopt
+URL: https://projects.coin-or.org/Ipopt
+Version: 3.12.7
+Libs: ${libdir}/libipoptamplinterface.la 
+Cflags: -I/home/habrauser/PycharmProjects/Udacity-CarND-Term2/p10-model-predictive-control/Ipopt-3.12.7/Ipopt/src/Apps/AmplSolver
+Requires: ipopt coinasl 

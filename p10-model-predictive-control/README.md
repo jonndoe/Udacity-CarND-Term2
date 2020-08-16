@@ -2,6 +2,34 @@
 #### Term 2
 # Project 10: Model Predictive Controller (MPC)
 
+
+
+# To run this project on local machine use docker container:
+
+`sudo docker-compose -f docker-compose.custom.yml up`
+
+# Now get the contaienr id:
+
+`sudo docker ps -a`
+
+# Now log in to that container:
+
+`sudo docker exec -it <cont_id> /bin/bash`
+
+# Now cd to mpc:
+
+`# cd mpc`
+
+# Now delete build folder:
+`# rm -r build`
+`# mkdir build && cd build`
+
+# Now compile project and run it:
+`# cmake -DCMAKE_C_COMPILER="/usr/bin/gcc-6" -DCMAKE_CXX_COMPILER="/usr/bin/g++-6" .. && make && ./mpc`
+
+# Now start simulator and it should work!
+
+
 ##### &nbsp;
 
 ## Goal
